@@ -16,4 +16,5 @@ public interface TbRoleDao {
     int updateByPrimaryKeySelective(TbRole record);
 
     int updateByPrimaryKey(TbRole record);
+
 }

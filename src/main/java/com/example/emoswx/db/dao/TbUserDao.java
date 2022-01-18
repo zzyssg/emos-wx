@@ -1,19 +1,27 @@
 package com.example.emoswx.db.dao;
 
-import com.example.emoswx.db.pojo.TbUser;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
+/**
+ * @ClassName TbUserDao
+ * @Date 2022/1/18 13:39
+ * @Author Admin
+ * @Description
+ */
 @Mapper
 public interface TbUserDao {
-    int deleteByPrimaryKey(Integer id);
+    public boolean haveRootUser();
 
-    int insert(TbUser record);
+    //TODO ？为什么没有加泛型
+    public int insert(HashMap params);
 
-    int insertSelective(TbUser record);
+    //查询用户主键id
+    public Integer searchIdByOpenid(String openId);
 
-    TbUser selectByPrimaryKey(Integer id);
-
-    int updateByPrimaryKeySelective(TbUser record);
-
-    int updateByPrimaryKey(TbUser record);
+    //查询用户查询
+    public Set<String> searchUserPermissions(int userId);
 }
