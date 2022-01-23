@@ -1,5 +1,6 @@
 package com.example.emoswx.db.dao;
 
+import com.example.emoswx.db.pojo.TbUser;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.HashMap;
@@ -24,4 +25,6 @@ public interface TbUserDao {
 
     //查询用户查询
     public Set<String> searchUserPermissions(int userId);
+
+    TbUser searchById(int userId);
 }

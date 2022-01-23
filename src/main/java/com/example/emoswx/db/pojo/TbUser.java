@@ -13,7 +13,7 @@ public class TbUser implements Serializable {
     /**
      * 主键
      */
-    private Object id;
+    private int id;
 
     /**
      * 长期授权字符串

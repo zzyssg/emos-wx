@@ -5,6 +5,7 @@ import cn.hutool.json.JSON;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.example.emoswx.db.dao.TbUserDao;
+import com.example.emoswx.db.pojo.TbUser;
 import com.example.emoswx.exception.EmosException;
 import com.example.emoswx.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -71,7 +72,7 @@ public class UserServiceImpl implements UserService {
 
                 HashMap rootMap = new HashMap();
                 String openId = getOpenId(code);
-                rootMap.put("openid", openId);
+                rootMap.put("openId", openId);
                 rootMap.put("photo", photo);
                 rootMap.put("nickname", nickname);
                 rootMap.put("createTime", new Date());
@@ -94,5 +95,22 @@ public class UserServiceImpl implements UserService {
     @Override
     public Set<String> searchUserPermissions(int userId) {
         return userDao.searchUserPermissions(userId);
+    }
+
+    @Override
+    public int longin(String code) {
+        //code - openid - 存在或者不存在
+        String openId = getOpenId(code);
+        Integer id = userDao.searchIdByOpenid(openId);
+        if (id == null) {
+            throw new EmosException("账户不存在");
+        }
+        //从消息队列中取消息
+        return id;
+    }
+
+    @Override
+    public TbUser searchById(int userId) {
+        return userDao.searchById(userId);
     }
 }

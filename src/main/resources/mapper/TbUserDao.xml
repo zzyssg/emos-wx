@@ -10,6 +10,7 @@
     <!--TODO 此处为什么不写resultType-->
     <insert id="insert" parameterType="hashmap">
         insert into tb_user
+        set
         <if test="openId!=null">
             open_id = #{openId},
         </if>
@@ -44,14 +45,20 @@
     </insert>
 
     <select id="searchIdByOpenid" parameterType="string" resultType="Integer">
-        select id from tb_user where open_id = #{openId}
+        select id from tb_user where open_id = #{openId} and status = 1
     </select>
 
     <select id="searchUserPermissions" parameterType="int" resultType="String">
         select p.permission_name
         from tb_user u
-        left join tb_role r on JSON_CONTAINS(u.role,cast(r.id))
-        left join tb_permissions p on JSON_CONTAINS(r.permissions,cast(p.id))
+        left join tb_role r on JSON_CONTAINS(u.role,cast(r.id as char))
+        left join tb_permission p on JSON_CONTAINS(r.permissions,cast(p.id as char))
         where u.id = #{userId} and u.status = 1
+    </select>
+
+    <select id="searchById" parameterType="int" resultType="com.example.emoswx.db.pojo.TbUser">
+        select id,open_id,nickname,photo,sex,tel,email,hiredate,role,root,dept_id,status,create_time
+        from Tb_user
+        where id = #{userId} and status = 1;
     </select>
 </mapper>

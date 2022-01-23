@@ -17,4 +17,9 @@ public interface UserService {
 
     //查询用户的权限
     public Set<String> searchUserPermissions(int userId);
+
+    //用户登录代码
+    public int longin(String code);
+
+    public TbUser searchById(int userId);
 }
