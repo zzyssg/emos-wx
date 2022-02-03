@@ -7,18 +7,26 @@ import com.example.emoswx.db.pojo.SysConfig;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.ServletComponentScan;
+import org.springframework.data.keyvalue.repository.support.QuerydslKeyValueRepository;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 import javax.annotation.PostConstruct;
+import java.io.File;
 import java.lang.reflect.Field;
 import java.util.List;
 
 @SpringBootApplication
 @ServletComponentScan
 @Slf4j
+@EnableAsync
 public class EmosWxApplication {
+
+    @Value("emos.image-folder")
+    String imageFolder;
 
     @Autowired
     SysConfigDao sysConfigDao;
@@ -43,9 +51,9 @@ public class EmosWxApplication {
             } catch (Exception e) {
                 log.error("执行异常",e);
             }
-
         }
-
+        //初始化文件夹
+        new File(imageFolder).mkdirs();
     }
 
 }

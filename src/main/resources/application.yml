@@ -23,6 +23,10 @@ spring:
       test-while-idle: true
       test-on-borrow: false
       test-on-return: false
+  mail:
+    default-encoding: utf-8
+    host: smtp.qq.com
+    username: 2726066523@qq.com
   redis:
     database: 0
     host: 39.105.37.164
@@ -65,6 +69,13 @@ emos:
     expire: 5
     #缓存过期时间（天）
     cache-expire: 10
+  face:
+    createFaceModelUrl: http://192.168.8.114:3000/create_face_model
+    checkinUrl: http://192.168.8.114:3000/checkin
+  email:
+    system: 2726066523@qq.com
+    zzy: nextoayou@163.com
+  image-folder: D:/emos/image
 
 wx:
   app-id: wx8dc396836c538a99

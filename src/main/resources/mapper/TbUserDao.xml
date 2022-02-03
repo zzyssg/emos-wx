@@ -61,4 +61,10 @@
         from Tb_user
         where id = #{userId} and status = 1;
     </select>
+    <select id="searchNameAndDept" parameterType="int" resultType="HashMap">
+        select u.name, d.dept_name
+        from tb_user u left join tb_dept d
+        on u.dept_id = d.id
+        where id = #{userId} and  status = 1
+    </select>
 </mapper>
