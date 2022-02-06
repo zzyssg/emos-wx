@@ -25,7 +25,7 @@ import java.util.List;
 @EnableAsync
 public class EmosWxApplication {
 
-    @Value("emos.image-folder")
+    @Value("${emos.image-folder}")
     String imageFolder;
 
     @Autowired

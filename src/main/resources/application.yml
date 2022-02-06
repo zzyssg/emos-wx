@@ -70,12 +70,13 @@ emos:
     #缓存过期时间（天）
     cache-expire: 10
   face:
-    createFaceModelUrl: http://192.168.8.114:3000/create_face_model
-    checkinUrl: http://192.168.8.114:3000/checkin
+    createFaceModelUrl: http://47.103.71.33:3000/create_face_model
+    checkinUrl: http://47.103.71.33:3000/checkin
   email:
     system: 2726066523@qq.com
     zzy: nextoayou@163.com
-  image-folder: D:/emos/image
+  image-folder: C:/emos/image
+  code: 66F153F9E9A85DA9
 
 wx:
   app-id: wx8dc396836c538a99

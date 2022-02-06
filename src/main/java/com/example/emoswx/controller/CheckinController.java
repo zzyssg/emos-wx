@@ -34,14 +34,16 @@ import java.util.Locale;
 @Api("签到模块接口")
 public class CheckinController {
 
-    @Value("emos.image_folder")
+    @Value("${emos.image-folder}")
     String imageFolder;
 
     @Autowired
     private JwtUtil jwtUtil;
 
+    @Autowired
     private CheckinService checkinService;
 
+    @GetMapping("/validCanCheckIn")
     public R validCanCheckin(@RequestHeader("token") String token) {
         int userId = jwtUtil.getUserId(token);
         String res = checkinService.validCanCheckin(userId, DateUtil.today());
@@ -53,7 +55,7 @@ public class CheckinController {
     public R checkin(@Valid CheckinForm checkinForm, @RequestParam("photo") MultipartFile file,
                      @RequestHeader("token") String token) {
         //没有上传文件
-        if (null == null) {
+        if (null == file) {
             return R.error("没有上传文件");
         }
         //保存文件
@@ -85,6 +87,8 @@ public class CheckinController {
         }
     }
 
+    @PostMapping("/createFaceModel")
+    @ApiOperation("创建人脸模型")
     public R createFaceModel(@RequestParam("photo") MultipartFile file,
                              @RequestHeader("token") String token) {
         //保存文件

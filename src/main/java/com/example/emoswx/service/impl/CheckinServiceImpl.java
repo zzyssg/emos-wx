@@ -70,6 +70,9 @@ public class CheckinServiceImpl implements CheckinService {
     @Value("${emos.face.checkinUrl}")
     private String checkinUrl;
 
+    @Value("${emos.code}")
+    private String code;
+
     @Value("${emos.face.createFaceModelUrl}")
     private String createFaceModelUrl;
 
@@ -138,6 +141,7 @@ public class CheckinServiceImpl implements CheckinService {
             String path = (String) checkinMap.get("path");
             HttpRequest request = HttpUtil.createPost(checkinUrl);
             request.form("photo", FileUtil.file(path), "targetModel", faceModel);
+            request.form("code",code);
             HttpResponse response = request.execute();
             String body = response.body();
             if ("无法识别出人脸".equals(body) || "照片中存在多张人脸".equals(body)) {
@@ -181,7 +185,7 @@ public class CheckinServiceImpl implements CheckinService {
                 }
                 //TODO 保存到签到表中
                 TbCheckin entity = new TbCheckin();
-                entity.setId(userId);
+                entity.setUserId(userId);
                 entity.setCity(city);
                 entity.setDate(DateUtil.today());
                 entity.setDistrict(district);
@@ -198,6 +202,7 @@ public class CheckinServiceImpl implements CheckinService {
     public void createFaceModel(int userId, String faceModel) {
         HttpRequest request = HttpUtil.createPost(createFaceModelUrl);
         request.form("photo", FileUtil.file(faceModel));
+        request.form("code",code);
         HttpResponse response = request.execute();
         String body = response.body();
         if ("无法识别出人脸".equals(body) || "照片中存在多张人脸".equals(body)) {

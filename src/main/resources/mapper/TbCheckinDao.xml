@@ -35,6 +35,6 @@
             risk=#{risk},
         </if>
         date=#{date},
-        create_time=#{createTime},
+        create_time=#{createTime}
     </insert>
 </mapper>

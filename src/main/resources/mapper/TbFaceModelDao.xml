@@ -9,7 +9,7 @@
   <insert id="insert" parameterType="com.example.emoswx.db.pojo.TbFaceModel" >
     insert into
     tb_face_model
-    set user_id = #{userId}, face_model = #{face_model}
+    set user_id = #{userId}, face_model = #{faceModel}
   </insert>
   <delete id="deleteFaceModel" parameterType="int">
     delete
