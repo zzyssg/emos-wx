@@ -4,4 +4,11 @@
   <select id="searchTodayIsWorkday" resultType="Integer">
     select id from tb_workday where date = ${date}
   </select>
+
+  <!--查询日期范围内的工作日期-->
+  <select id="searchWorkDayInRange" parameterType="hashmap" resultType="String">
+    select date
+    from tb_workday
+    where date between #{startDate} and #{endDate}
+  </select>
 </mapper>

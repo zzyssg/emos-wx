@@ -1,8 +1,11 @@
 package com.example.emoswx.service.impl;
 
+import cn.hutool.core.date.DateField;
+import cn.hutool.core.date.DateRange;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.lang.hash.Hash;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
@@ -22,10 +25,13 @@ import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
+import org.springframework.expression.spel.ast.NullLiteral;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -61,7 +67,7 @@ public class CheckinServiceImpl implements CheckinService {
     @Autowired
     TbUserDao userDao;
 
-    @Value("emos.email.hr")
+    @Value("${emos.email.hr}")
     private String hrEmail;
 
     @Autowired
@@ -170,9 +176,10 @@ public class CheckinServiceImpl implements CheckinService {
                                 deptName = deptName == null ? "" : deptName;
                                 SimpleMailMessage message = new SimpleMailMessage();
                                 message.setTo(hrEmail);
+
                                 message.setSubject("员工" + name + "身处高风险疫情区警告");
                                 message.setText(deptName + "员工" + name + "," + DateUtil.format(new Date(),"yyyy-mm-dd") +
-                                        "处于" + "请及时与该员工联系，核实情况");
+                                        "处于" + district + ",请及时与该员工联系，核实情况");
                                 emailTask.sendAsync(message);
                             } else if ("中风险".equals(res)) {
                                 risk = risk < 2 ? 2 : risk;
@@ -216,4 +223,83 @@ public class CheckinServiceImpl implements CheckinService {
 
 
     }
+
+    @Override
+    public HashMap searchTodayCheckin(int userId) {
+        HashMap todayCheckinMap = checkinDao.searchTodayCheckin(userId);
+        return todayCheckinMap;
+    }
+
+    @Override
+    public long searchCheckinDays(int userId) {
+        return checkinDao.searchCheckinDays(userId);
+    }
+
+    @Override
+    public ArrayList<HashMap> searchWeekCheckin(HashMap checkinMap) {
+        ArrayList<HashMap> weekCheckin = checkinDao.searchWeekCheckin(checkinMap);
+        ArrayList<String> holidaysInrage = holidaysDao.searchHolidaysInrage(checkinMap);
+        ArrayList<String> workDayInRange = workdayDao.searchWorkDayInRange(checkinMap);
+        DateTime startDate = DateUtil.parseDate(checkinMap.get("startDate").toString());
+        DateTime endDate = DateUtil.parseDate(checkinMap.get("endDate").toString());
+        DateRange dateRange = DateUtil.range(startDate, endDate, DateField.DAY_OF_MONTH);
+        ArrayList list = new ArrayList();
+
+        dateRange.forEach(dateTime -> {
+            String date = dateTime.toString("yyyy-MM-dd");
+            //TODO 将节假日、工作日换为枚举类
+            //查看今天是假期或者工作日
+            String type = "工作日";
+            if (dateTime.isWeekend()) {
+                type = "节假日";
+            }
+            if (holidaysInrage != null && holidaysInrage.contains(dateTime)) {
+                type = "节假日";
+            }
+            if (workDayInRange != null && workDayInRange.contains(dateTime)) {
+                type = "工作日";
+            }
+
+            //每个日期下面的状态：准时或者缺勤
+            String status = "";
+            //今天之前的
+            if ("工作日".equals(type) && DateUtil.compare(dateTime, DateUtil.date()) <= 0) {
+                status = "缺勤";
+                //访问过
+                boolean flag = false;
+                for (HashMap<String,String> map : weekCheckin) {
+                    if (map != null && map.containsValue(date)) {
+                        status = map.get("status");
+                        flag = true;
+                        break;
+                    }
+                }
+                //判断今天
+                DateTime endTime = DateUtil.parse(DateUtil.today() + " " + sysConstant.attendanceEndTime);
+                String today = DateUtil.today();
+                if (today.equals(dateTime) && dateTime.isBefore(endTime) && !flag) {
+                    status = "";
+                }
+
+            }
+
+            //封装每天的状态
+            HashMap map = new HashMap();
+            map.put("date",date);
+            map.put("status",status);
+            map.put("type",type);
+            map.put("day", dateTime.dayOfWeekEnum().toChinese("周"));
+            list.add(map);
+        });
+
+        return list;
+
+    }
+
+    @Override
+    public ArrayList<HashMap> searchMonthCheckin(HashMap checkinMap) {
+        return searchWeekCheckin(checkinMap);
+    }
+
+
 }

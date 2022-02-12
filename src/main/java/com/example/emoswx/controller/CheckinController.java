@@ -1,13 +1,17 @@
 package com.example.emoswx.controller;
 
+import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.lang.hash.Hash;
 import com.example.emoswx.common.util.R;
+import com.example.emoswx.config.SysConstant;
 import com.example.emoswx.config.shiro.JwtUtil;
 import com.example.emoswx.controller.form.CheckinForm;
+import com.example.emoswx.controller.form.SearchMonthCheckinForm;
 import com.example.emoswx.exception.EmosException;
 import com.example.emoswx.service.CheckinService;
+import com.example.emoswx.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +23,8 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 
@@ -42,6 +48,12 @@ public class CheckinController {
 
     @Autowired
     private CheckinService checkinService;
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private SysConstant sysConstant;
 
     @GetMapping("/validCanCheckIn")
     public R validCanCheckin(@RequestHeader("token") String token) {
@@ -111,6 +123,74 @@ public class CheckinController {
                 FileUtil.del(path);
             }
         }
+
+    }
+
+    @GetMapping("/searchTodayCheckin")
+    @ApiOperation("查询当日签到数据")
+    public R searchTodayCheckin(@RequestHeader("token") String token) {
+        int userId = jwtUtil.getUserId(token);
+        HashMap todayCheckinMap = checkinService.searchTodayCheckin(userId);
+        todayCheckinMap.put("attendanceTime", sysConstant.attendanceTime);
+        todayCheckinMap.put("closingTime", sysConstant.closingTime);
+        long checkinDaysCount = checkinService.searchCheckinDays(userId);
+        todayCheckinMap.put("checkinDays", checkinDaysCount);
+
+        //判断日期是否在入职日期之前
+        DateTime beginOfWeek = DateUtil.beginOfWeek(DateUtil.date());
+        DateTime hiredate = DateUtil.parse(userService.searchHiredate(userId));
+        if(DateUtil.compare(beginOfWeek,hiredate) < 0){
+            beginOfWeek = hiredate;
+        }
+        DateTime endOfWeek = DateUtil.endOfWeek(DateUtil.date());
+        HashMap checkinMap = new HashMap();
+        checkinMap.put("startDate", beginOfWeek.toString());
+        checkinMap.put("endDate", endOfWeek.toString());
+        checkinMap.put("userId", userId);
+        ArrayList<HashMap> weekCheckin = checkinService.searchWeekCheckin(checkinMap);
+        todayCheckinMap.put("weekCheckin", weekCheckin);
+        return R.ok().put("result", todayCheckinMap);
+    }
+
+    @PostMapping("/searchMonthCheckin")
+    @ApiOperation("查询月度考勤")
+    public R searchMonthCheckin(@RequestBody SearchMonthCheckinForm searchMonthCheckinForm, @RequestHeader("token") String token) {
+        int userId = jwtUtil.getUserId(token);
+        log.info(userService.searchHiredate(userId));
+        DateTime hiredate = DateUtil.parse(userService.searchHiredate(userId));
+        DateTime startDate = DateUtil.parse(searchMonthCheckinForm.getYear() + "-" + searchMonthCheckinForm.getMonth() + "-01");
+        if(startDate.isBefore(DateUtil.beginOfMonth(hiredate))){
+            throw new EmosException("只能查询入职日期之后的考勤");
+        }
+        if (startDate.isBefore(hiredate)) {
+            startDate = hiredate;
+        }
+        DateTime endDate = DateUtil.endOfMonth(startDate);
+        HashMap checkinMap = new HashMap();
+        checkinMap.put("startDate",startDate.toString("yyyy-MM-dd"));
+        checkinMap.put("endDate",endDate.toString("yyyy-MM-dd"));
+        checkinMap.put("userId",userId);
+
+        ArrayList<HashMap> monthCheckinList = checkinService.searchMonthCheckin(checkinMap);
+        //遍历月度考勤
+        int sumNormal = 0, sumLate = 0, sumAbsent = 0;
+        for (HashMap map : monthCheckinList) {
+            String type = (String) map.get("type");
+            String status = (String) map.get("status");
+            if("工作日".equals(type)){
+                if("正常".equals(status)){
+                    sumNormal++;
+                } else if ("迟到".equals(status)) {
+                    sumLate++;
+                } else if ("缺勤".equals(status)) {
+                    sumAbsent++;
+                }
+            }
+        }
+        return R.ok().put("sumNormal", sumNormal)
+                .put("sumLate", sumLate)
+                .put("sumAbsent", sumAbsent)
+                .put("list",monthCheckinList);
 
     }
 

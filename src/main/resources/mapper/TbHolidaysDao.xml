@@ -4,4 +4,11 @@
   <select id="searchTodayIsHoliday" resultType="Integer">
     select id from tb_Holidays where date = #{date}
   </select>
+
+  <!--查询某个范围内的假期-->
+  <select id="searchHolidaysInrage" parameterType="hashmap" resultType="String">
+    select date
+    from tb_holidays
+    where date between #{startDate} and #{endDate}
+  </select>
 </mapper>

@@ -29,4 +29,10 @@ public interface TbUserDao {
     TbUser searchById(int userId);
 
     public HashMap searchNameAndDept(int userId);
+
+    /*查询员工入职日期*/
+    public String searchHiredate(int userId);
+
+    /*查询用户摘要*/
+    public HashMap searchUserSummary(int userId);
 }

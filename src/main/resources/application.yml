@@ -24,9 +24,10 @@ spring:
       test-on-borrow: false
       test-on-return: false
   mail:
-    default-encoding: utf-8
+    default-encoding: UTF-8
     host: smtp.qq.com
     username: 2726066523@qq.com
+    password: xegiwnvbeyvqdgcf
   redis:
     database: 0
     host: 39.105.37.164
@@ -40,12 +41,16 @@ spring:
         min-idle: 8
   data:
     mongodb:
-      host: 39.105.37.164
-      port: 27017
-      database: emos
-      authentication-database: admin
-      username: admin
-      password: 116924
+      uri: mongodb://zzy:116924@47.103.71.33:27017/emos?authSource=admin&authMechanism=SCRAM-SHA-1
+
+#      authentication-database: admin
+#      database: admin
+#      username: admin
+#      password: 116924
+##      host: 39.105.37.164
+#      host: 47.103.71.33
+#      port: 27017
+
 
 mybatis:
   mapper-locations: classpath*:mapper/*.xml
@@ -62,6 +67,8 @@ logging:
     console: "%d{HH:mm:ss}  %-5level  %msg%n"
 
 emos:
+  aliyunLiuyu: 47.103.71.33
+  rabbitMQPort: 5672
   jwt:
     #秘钥
     secret: 116924
@@ -74,7 +81,7 @@ emos:
     checkinUrl: http://47.103.71.33:3000/checkin
   email:
     system: 2726066523@qq.com
-    zzy: nextoayou@163.com
+    hr: nextoayou@163.com
   image-folder: C:/emos/image
   code: 66F153F9E9A85DA9
 

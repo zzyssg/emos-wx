@@ -37,4 +37,38 @@
         date=#{date},
         create_time=#{createTime}
     </insert>
+
+    <!--查询员工当天签到情况-->
+    <select id="searchTodayCheckin" parameterType="int" resultType="hashmap">
+        select u.name,u.photo,d.dept_name as deptName,ck.address,
+               case
+                    when ck.status = 1 then "正常"
+                    when ck.status = 2 then "迟到"
+               end as status,
+               case
+                    when ck.risk = 3 then "高风险"
+                    when ck.risk = 2 then "中风险"
+                    when ck.risk = 2 then "低风险"
+               end as risk
+        from tb_user u
+        left join tb_dept d
+        on u.dept_id = d.id
+        left join tb_checkin ck
+        on u.id = ck.user_id and ck.date = CURRENT_DATE
+        where u.id = #{user_id} and u.status = 1
+    </select>
+
+    <!--查询签到天数-->
+    <select id="searchCheckinDays" parameterType="int" resultType="long">
+        select count(*) as count
+        from tb_checkin c
+        where c.user_id = #{user_id}
+    </select>
+
+    <!--查询工作日考勤-->
+    <select id="searchWeekCheckin" parameterType="HashMap" resultType="HashMap">
+        select cast(date as char) as date,if(status = 1,"正常","迟到") as status
+        from tb_checkin
+        where user_id  = #{userId} and date between #{startDate} and #{endDate}
+    </select>
 </mapper>

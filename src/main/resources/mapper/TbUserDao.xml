@@ -65,6 +65,22 @@
         select u.name, d.dept_name
         from tb_user u left join tb_dept d
         on u.dept_id = d.id
-        where id = #{userId} and  status = 1
+        where u.id = #{userId} and  u.status = 1
+    </select>
+
+    <!--查询员工入职日期-->
+    <select id="searchHiredate" parameterType="int" resultType="String">
+        select hiredate
+        from tb_user
+        where id = #{userId}
+    </select>
+
+    <!--查询用户摘要-->
+    <select id="searchUserSummary" parameterType="int" resultType="hashmap">
+        select u.name,d.dept_name as deptName
+        from tb_user u
+        left join tb_dept d
+        on u.dept_id = d.id
+        where u.id = #{userId} and u.status = 1
     </select>
 </mapper>

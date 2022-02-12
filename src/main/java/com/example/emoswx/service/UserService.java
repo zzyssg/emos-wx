@@ -3,6 +3,7 @@ package com.example.emoswx.service;
 
 import com.example.emoswx.db.pojo.TbUser;
 
+import java.util.HashMap;
 import java.util.Set;
 
 /**
@@ -22,4 +23,10 @@ public interface UserService {
     public int longin(String code);
 
     public TbUser searchById(int userId);
+
+    /*查询员工入职日期*/
+    public String searchHiredate(int userId);
+
+    /*查询用户摘要*/
+    public HashMap searchUserSummary(int userId);
 }
