@@ -1,10 +1,12 @@
 package com.example.emoswx.service.impl;
 
+import cn.hutool.core.lang.hash.Hash;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSON;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import com.example.emoswx.db.dao.TbDeptDao;
 import com.example.emoswx.db.dao.TbUserDao;
 import com.example.emoswx.db.pojo.MessageEntity;
 import com.example.emoswx.db.pojo.TbUser;
@@ -19,9 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.net.http.HttpClient;
 import java.net.http.HttpResponse;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @ClassName UserServiceImpl
@@ -43,6 +43,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private TbUserDao userDao;
+
+    @Autowired
+    private TbDeptDao deptDao;
 
     @Autowired
     private MessageTask messageTask;
@@ -141,5 +144,29 @@ public class UserServiceImpl implements UserService {
     @Override
     public HashMap searchUserSummary(int userId) {
         return userDao.searchUserSummary(userId);
+    }
+
+    @Override
+    public ArrayList<HashMap> searchUserGroupByDept(String keyword) {
+        ArrayList<HashMap> deptMembers = deptDao.searchDeptMembers(keyword);
+        ArrayList<HashMap> userGroupByDept = userDao.searchUserGroupByDept(keyword);
+        //将userGroupByDept的人员添加进deptMembers
+        for (HashMap dept : deptMembers) {
+            Long deptId = (long) dept.get("id");
+            ArrayList members = new ArrayList();
+            for (HashMap user : userGroupByDept) {
+                Long deptId2 = (long) user.get("deptId");
+                if (deptId.equals(deptId2)) {
+                    members.add(user);
+                }
+            }
+            dept.put("members", members);
+        }
+        return deptMembers;
+    }
+
+    @Override
+    public ArrayList<HashMap> searchMembers(List param) {
+        return userDao.searchMembers(param);
     }
 }

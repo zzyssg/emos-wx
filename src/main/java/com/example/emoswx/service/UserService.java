@@ -3,7 +3,9 @@ package com.example.emoswx.service;
 
 import com.example.emoswx.db.pojo.TbUser;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -29,4 +31,9 @@ public interface UserService {
 
     /*查询用户摘要*/
     public HashMap searchUserSummary(int userId);
+
+    public ArrayList<HashMap> searchUserGroupByDept(String keyword);
+
+    /*查询members*/
+    public ArrayList<HashMap> searchMembers(List param);
 }

@@ -3,9 +3,7 @@ package com.example.emoswx.db.dao;
 import com.example.emoswx.db.pojo.TbUser;
 import org.apache.ibatis.annotations.Mapper;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @ClassName TbUserDao
@@ -35,4 +33,9 @@ public interface TbUserDao {
 
     /*查询用户摘要*/
     public HashMap searchUserSummary(int userId);
+
+    /*searchUserGroupByDept*/
+    public ArrayList<HashMap> searchUserGroupByDept(String keyword);
+
+    public ArrayList<HashMap> searchMembers(List param);
 }

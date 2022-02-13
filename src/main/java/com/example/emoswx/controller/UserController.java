@@ -1,9 +1,13 @@
 package com.example.emoswx.controller;
 
+import cn.hutool.json.JSONUtil;
 import com.example.emoswx.common.util.R;
 import com.example.emoswx.config.shiro.JwtUtil;
 import com.example.emoswx.controller.form.LoginForm;
 import com.example.emoswx.controller.form.RegisterForm;
+import com.example.emoswx.controller.form.SearchMembersForm;
+import com.example.emoswx.controller.form.SearchUserGroupByDeptForm;
+import com.example.emoswx.exception.EmosException;
 import com.example.emoswx.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModel;
@@ -16,7 +20,9 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -76,7 +82,7 @@ public class UserController {
 
     @PostMapping("/addUser")
     @ApiOperation("添加用户")
-    @RequiresPermissions(value = {"ROOT","USER:ADD"},logical = Logical.OR)
+    @RequiresPermissions(value = {"ROOT", "USER:ADD"}, logical = Logical.OR)
     public R addUser() {
         return R.ok("添加用户成功！");
     }
@@ -90,4 +96,24 @@ public class UserController {
 
     }
 
+    @PostMapping("/searchUserGroupByDept")
+    @RequiresPermissions(value = {"ROOT","EMPLOYEE:SELECT"},logical = Logical.OR)
+    @ApiOperation("根据部门查询人员")
+    public R searchUserGroupByDept(@Valid @RequestBody SearchUserGroupByDeptForm form) {
+        ArrayList<HashMap> userGroupByDept = userService.searchUserGroupByDept(form.getKeyword());
+        return R.ok().put("result", userGroupByDept);
+    }
+
+    @PostMapping("/searchMembers")
+    @ApiOperation("查询成员")
+    @RequiresPermissions(value = {"ROOT","MEETING:INSERT","MEETING:UPDATE"},logical = Logical.OR)
+    public R searchMembers(@Valid @RequestBody SearchMembersForm form) {
+
+        if (!JSONUtil.isJsonArray(form.getMembers())) {
+            throw new EmosException("members不是json数组");
+        }
+        List<List> mermbers = JSONUtil.parseArray(form.getMembers()).toList(List.class);
+        ArrayList<HashMap> members = userService.searchMembers(mermbers);
+        return R.ok().put("result", members);
+    }
 }
