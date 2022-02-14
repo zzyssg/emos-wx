@@ -135,4 +135,43 @@
         </foreach>
     </select>
 
+    <!--查询用户信息(包含中文角色)-->
+    <select id="searchUserInfo" parameterType="int" resultType="hashmap">
+        select u.open_id as openId,u.nickname,u.photo,u.name,u.sex,u.tel,
+               u.email,u.hiredate
+               ,d.dept_name as deptName
+               ,
+               case u.status
+                when 1 then "在职"
+                when 2 then "离职"
+               end as status ,
+               (select GROUP_CONCAT(role_name separator '，') from tb_role where
+                JSON.CONTSINS(u.role,CAST(id as char))) as roles
+        from tb_user u
+        left join tb_dept d
+        on u.dept_id = d.id
+        where id = #{userId} and u.status = 1
+
+    </select>
+
+
+    <!--查询部门经理id //TODO 为什么要自连接-->
+    <select id="searchDeptManagerId" parameterType="int" resultType="hashmap">
+        select u2.id
+        from tb_user u1
+        left join tb_user u2
+        on u1.dept_id = u2.dept_id
+        left join tb_role r
+        on JSON_CONTAINS(u2.role,cast(r.id as char))
+        where u1.id = #{id} and r.id = 2 and u1.status = 1 and u2.status = 1
+    </select>
+
+    <!--查询总经理id-->
+    <select id="searchGmid" resultType="int">
+        select id
+        from tb_user u
+        join tb_role r on json.contains(u.role,cast(r.id as char))
+        where r.id = 1 and u.status = 1
+    </select>
+
 </mapper>
