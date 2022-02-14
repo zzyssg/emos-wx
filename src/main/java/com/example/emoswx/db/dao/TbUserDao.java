@@ -34,8 +34,17 @@ public interface TbUserDao {
     /*查询用户摘要*/
     public HashMap searchUserSummary(int userId);
 
-    /*searchUserGroupByDept*/
+    /*根据部门查询用户部门*/
     public ArrayList<HashMap> searchUserGroupByDept(String keyword);
 
+    /*查询成员*/
     public ArrayList<HashMap> searchMembers(List param);
+
+    public HashMap searchUserInfo(int userId);
+
+    public int searchDeptManagerId(int id);
+
+    public int searchGmId();
+
+
 }

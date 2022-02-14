@@ -24,6 +24,7 @@
         create_time = #{createTime}
     </insert>
 
+
     <!--分页查询-->
     <!--TODO 怎么这样写sql，如果自己写怎么写？-->
     <select id="searchMyMeetingListByPage" parameterType="hashmap" resultType="hashmap">
@@ -45,5 +46,81 @@
         order by m.date,m.start,m.end
         limit #{start},#{length}
     </select>
+
+    <!--根据会议的uuid查询会议成员是否属于同一个部门-->
+    <select id="searchMeetingMembersInSameDept" parameterType="String" resultType="boolean">
+        select
+            if(count(distinct u.dept_id) = 1,true,false) as bool
+        from tb_meeting m
+        left join tb_user u on json.contains(m.members,cast u.id as char)
+        where m.uuid = #{uuid} and u.status != 1
+    </select>
+
+    <!--根据uuid更新会议实例id-->
+    <update id="updateInstanceId" parameterType="hashmap">
+        update tb_meeting
+        set instance_id = #{instanceId}
+        where uuid = #{uuid}
+    </update>
+
+    <!--根据会议id查询会议详情-->
+    <!--//TODO 变黄的字段需要转义吗-->
+    <select id="searchMeetingById" parameterType="int" resultType="hashmap">
+        select
+            m.uuid,m.title,m.creator_id as creatorId,
+               date_format(m.date,'%Y-%m-%d') as date,place,
+                date_format(m.start,'%h:%i') as start,
+            date_format(m.end,'%h:%i') as end,type,
+            m.desc,m.instance_id as instanceId,m.status,
+            create_time as createTime
+        from tb_meeting m
+        left join tb_user m on m.creator_id = u.id
+        where m.id = #{meetingId} and u.status = 1
+    </select>
+
+    <!--根据会议Id查询会议成员-->
+    <select id="searchMeetingMembers" parameterType="int" resultType="hashmap">
+        select u.id,u.name,u.photo
+        from tb_meeting m
+        left join tb_user u on json.contains(m.members,cast (u.id as char))
+        where m.id = #{meetingId} and u.status = 1
+    </select>
+
+    <!--根据会议id更新会议-->
+    <update id="updateMeetingInfo" parameterType="String" >
+        update
+        tb_meeting
+        set
+        uuid = #{uuid},
+        title = #{titile},
+        creator = #{creator},
+        date = #{date},
+        <if test="place != null">
+            place = #{place},
+        </if>
+        <if test="place == null">
+            place = null,
+        </if>
+        start = #{start},
+        end = #{end},
+        type = #{type},
+        members = #{members},
+        desc = #{desc},
+        instance_id = instanceId,
+        status = #{status},
+        create_time = #{createTime}
+        where id = #{id} and status = 3
+    </update>
+
+    <!--根据会议id删除会议-->
+    <delete id="deleteMeetingById" parameterType="int">
+        delete
+        from tb_meeting
+        where  id = #{id} and status = 3
+    </delete>
+
+
+
+
 
 </mapper>

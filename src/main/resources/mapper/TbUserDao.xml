@@ -156,7 +156,7 @@
 
 
     <!--查询部门经理id //TODO 为什么要自连接-->
-    <select id="searchDeptManagerId" parameterType="int" resultType="hashmap">
+    <select id="searchDeptManagerId" parameterType="int" resultType="int">
         select u2.id
         from tb_user u1
         left join tb_user u2
@@ -167,7 +167,7 @@
     </select>
 
     <!--查询总经理id-->
-    <select id="searchGmid" resultType="int">
+    <select id="searchGmId" resultType="int">
         select id
         from tb_user u
         join tb_role r on json.contains(u.role,cast(r.id as char))

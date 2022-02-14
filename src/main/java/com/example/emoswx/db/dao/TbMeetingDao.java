@@ -1,7 +1,6 @@
 package com.example.emoswx.db.dao;
 
 
-import cn.hutool.core.lang.hash.Hash;
 import com.example.emoswx.db.pojo.TbMeeting;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -19,6 +18,20 @@ public interface TbMeetingDao {
     public int insertMeeting(TbMeeting meeting);
 
     public ArrayList<HashMap> searchMyMeetingListByPage(HashMap param);
+
+
+    public boolean searchMeetingMembersInSameDept(String uuid);
+
+    public int updateInstanceId(HashMap param);
+
+    public HashMap searchMeetingById(int meetingId);
+
+    public ArrayList<HashMap> searchMeetingMembers(int meetingId);
+
+    public int updateMeetingInfo(HashMap param);
+
+    public int deleteMeetingById(int id);
+
 }
 
 

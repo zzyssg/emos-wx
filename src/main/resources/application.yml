@@ -69,6 +69,7 @@ logging:
 emos:
   aliyunLiuyu: 47.103.71.33
   rabbitMQPort: 5672
+  receiveNotify: http://localhost:8080/emoswx/meeting/receiveNotify
   jwt:
     #秘钥
     secret: 116924
@@ -84,6 +85,8 @@ emos:
     hr: nextoayou@163.com
   image-folder: C:/emos/image
   code: 66F153F9E9A85DA9
+workflow:
+  url: http://47.103.71.33:9090/emos-workflow
 
 wx:
   app-id: wx8dc396836c538a99
