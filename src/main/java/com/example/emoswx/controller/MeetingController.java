@@ -13,7 +13,6 @@ import com.example.emoswx.service.MeetingService;
 import com.example.emoswx.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.apache.catalina.User;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +22,6 @@ import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * @ClassName MeetingController
@@ -144,7 +142,7 @@ public class MeetingController {
 
     @PostMapping("/deleteMeetingById")
     @ApiOperation("根据会议id删除会议")
-    @RequiresPermissions(value = {"ROOT", "MEETING:DELETE"}, logical = Logical.OR)
+//    @RequiresPermissions(value = {"ROOT", "MEETING:DELETE"}, logical = Logical.OR)
     public R deleteMeetingById(@Valid @RequestBody DeleteMeetingByIdForm form) {
         meetingService.deleteMeetingById(form.getId());
         return R.ok().put("result", "success");

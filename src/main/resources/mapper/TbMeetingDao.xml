@@ -72,9 +72,9 @@
                 date_format(m.start,'%h:%i') as start,
             date_format(m.end,'%h:%i') as end,type,
             m.desc,m.instance_id as instanceId,m.status,
-            create_time as createTime
+            m.create_time as createTime
         from tb_meeting m
-        left join tb_user m on m.creator_id = u.id
+        left join tb_user u on m.creator_id = u.id
         where m.id = #{meetingId} and u.status = 1
     </select>
 
