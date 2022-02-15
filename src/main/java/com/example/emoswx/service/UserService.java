@@ -36,4 +36,6 @@ public interface UserService {
 
     /*查询members*/
     public ArrayList<HashMap> searchMembers(List param);
+
+    public ArrayList<HashMap> selectUserPhotoAndName(List list);
 }

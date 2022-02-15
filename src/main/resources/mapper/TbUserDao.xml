@@ -174,4 +174,14 @@
         where r.id = 1 and u.status = 1
     </select>
 
+    <!--查询用户的名字和头像-->
+    <select id="selectUserPhotoAndName" parameterType="list" resultType="hashmap">
+        select id,name,photo
+        from tb_user
+        where status = 1 and  id in
+        <foreach collection="list" open="(" item="one" close=")" separator=",">
+            #{one}
+        </foreach>
+    </select>
+
 </mapper>

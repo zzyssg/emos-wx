@@ -46,5 +46,8 @@ public interface TbUserDao {
 
     public int searchGmId();
 
+    public ArrayList<HashMap> selectUserPhotoAndName(List list);
+
+
 
 }

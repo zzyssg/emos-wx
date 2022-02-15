@@ -43,7 +43,7 @@
         join tb_user u1 on JSON_CONTAINS(m.members,CAST(u1.id as char))
         join tb_user u2 on m.creator_id = u2.id
         where u1.id = #{userId} and u1.status = 1 and u2.status = 1 and m.status in (3,4)
-        order by m.date,m.start,m.end
+        order by m.date desc,m.start,m.end
         limit #{start},#{length}
     </select>
 

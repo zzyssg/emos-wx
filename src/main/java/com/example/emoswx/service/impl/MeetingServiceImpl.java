@@ -192,6 +192,7 @@ public class MeetingServiceImpl implements MeetingService {
         json.set("code",code );
         json.set("uuid", uuid);
         HttpResponse response = HttpRequest.post(delUrl).header("context-type", "application/json").body(json.toString()).execute();
+        log.info("response:",response);
         if (response.getStatus() != 200) {
             throw new EmosException("删除工作流失败");
         }

@@ -54,6 +54,7 @@ public class ShiroConfiguration {
         filterMap.put("/user/register","anon");
         filterMap.put("/test/**","anon");
         filterMap.put("/**","anon");
+        filterMap.put("/meeting/receiveNotify", "anon");
         shiroFilter.setFilterChainDefinitionMap(filterMap);
         return shiroFilter;
     }

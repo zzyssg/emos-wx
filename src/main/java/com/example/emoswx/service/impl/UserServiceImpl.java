@@ -169,4 +169,10 @@ public class UserServiceImpl implements UserService {
     public ArrayList<HashMap> searchMembers(List param) {
         return userDao.searchMembers(param);
     }
+
+    @Override
+    public ArrayList<HashMap> selectUserPhotoAndName(List param) {
+        ArrayList list = userDao.selectUserPhotoAndName(param);
+        return list;
+    }
 }

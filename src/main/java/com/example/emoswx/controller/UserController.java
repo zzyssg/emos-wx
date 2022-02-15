@@ -3,10 +3,7 @@ package com.example.emoswx.controller;
 import cn.hutool.json.JSONUtil;
 import com.example.emoswx.common.util.R;
 import com.example.emoswx.config.shiro.JwtUtil;
-import com.example.emoswx.controller.form.LoginForm;
-import com.example.emoswx.controller.form.RegisterForm;
-import com.example.emoswx.controller.form.SearchMembersForm;
-import com.example.emoswx.controller.form.SearchUserGroupByDeptForm;
+import com.example.emoswx.controller.form.*;
 import com.example.emoswx.exception.EmosException;
 import com.example.emoswx.service.UserService;
 import io.swagger.annotations.Api;
@@ -115,5 +112,17 @@ public class UserController {
         List<List> mermbers = JSONUtil.parseArray(form.getMembers()).toList(List.class);
         ArrayList<HashMap> members = userService.searchMembers(mermbers);
         return R.ok().put("result", members);
+    }
+
+    @PostMapping("/searchUserPhotoAndName")
+    @ApiOperation("查询用户的名字和头像")
+    @RequiresPermissions(value = {"WORKFLOW:APPROVAL"}, logical = Logical.OR)
+    public R searchUserPhotoAndName(@Valid @RequestBody SelectUserPhotoAndNameForm form) {
+        if (!JSONUtil.isJsonArray(form.getIds())) {
+            throw new EmosException("参数不是json数组");
+        }
+        List<Integer> list = JSONUtil.parseArray(form.getIds()).toList(Integer.class);
+        ArrayList<HashMap> result = userService.selectUserPhotoAndName(list);
+        return R.ok().put("result", result);
     }
 }

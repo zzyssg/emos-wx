@@ -13,6 +13,7 @@ import com.example.emoswx.service.MeetingService;
 import com.example.emoswx.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,7 @@ import java.util.HashMap;
 @RestController
 @RequestMapping("/meeting")
 @Api("会议接口")
+@Slf4j
 public class MeetingController {
 
     @Autowired
@@ -148,6 +150,16 @@ public class MeetingController {
         return R.ok().put("result", "success");
     }
 
+    @PostMapping("/receiveNotify")
+    @ApiOperation("接收工作流通知")
+    public R receiveNotify(@Valid @RequestBody ReceiveNotifyForm form) {
+        if ("同意".equals(form.getResult())) {
+            log.debug(form.getUuid() + "的会议审批通过");
+        } else {
+            log.debug(form.getUuid() + "的会议审批未通过");
+        }
+        return R.ok();
+    }
 
 
 
